@@ -83,7 +83,7 @@ func addToEvent(ctx *zerolog.Event, key string, value slog.Value) *zerolog.Event
 	case slog.KindUint64:
 		ctx = ctx.Uint64(key, value.Uint64())
 	case slog.KindGroup:
-		ctx = ctx.Any(key, value.Any()) // TODO
+		ctx = ctx.Object(key, attrsObject{value.Group()})
 	case slog.KindLogValuer:
 		return addToEvent(ctx, key, value.LogValuer().LogValue())
 	default:
@@ -111,7 +111,7 @@ func addToContext(ctx zerolog.Context, key string, value slog.Value) zerolog.Con
 	case slog.KindUint64:
 		ctx = ctx.Uint64(key, value.Uint64())
 	case slog.KindGroup:
-		ctx = ctx.Any(key, value.Any()) // TODO
+		ctx = ctx.Object(key, attrsObject{value.Group()})
 	case slog.KindLogValuer:
 		return addToContext(ctx, key, value.LogValuer().LogValue())
 	default:
