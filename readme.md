@@ -1,6 +1,5 @@
 # use zerolog as slog handler
 
-
 ```golang
 package main
 
@@ -28,3 +27,6 @@ func main() {
 	l.Info("3")
 }
 ```
+
+
+This is a immature implement for using zerolog as `slog.Handler`. it pass most of slogtest expect multi-With (nested group, `l.With("a", "b").WithGroup("G").With("c", "d").WithGroup("H").Info("msg", "e", "f")`）
