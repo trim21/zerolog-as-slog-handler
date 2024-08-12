@@ -49,22 +49,46 @@ func (h handler) Handle(ctx context.Context, record slog.Record) error {
 	}
 
 	if record.Time.IsZero() {
-		msg = msg.Timestamp()
+		//msg = msg.Timestamp()
 	} else {
 		msg.Time(zerolog.TimestampFieldName, record.Time)
 	}
 
-	record.Attrs(func(attr slog.Attr) bool {
-		msg = addToEvent(msg, attr.Key, attr.Value)
-		return true
-	})
+	if len(h.groups) > 0 {
+		msg.Object(h.groups[len(h.groups)-1], recordAsObject{record: record})
+	} else {
+		record.Attrs(func(attr slog.Attr) bool {
+			msg = addToEvent(msg, attr.Key, attr.Value)
+			return true
+		})
+	}
 
 	msg.Msg(record.Message)
 
 	return nil
 }
 
+type recordAsObject struct {
+	record slog.Record
+}
+
+func (r recordAsObject) MarshalZerologObject(e *zerolog.Event) {
+	r.record.Attrs(func(attr slog.Attr) bool {
+		addToEvent(e, attr.Key, attr.Value)
+		return true
+	})
+}
+
 func addToEvent(ctx *zerolog.Event, key string, value slog.Value) *zerolog.Event {
+	if key == "" {
+		if value.Kind() == slog.KindGroup {
+			for _, attr := range value.Group() {
+				ctx = addToEvent(ctx, attr.Key, attr.Value)
+			}
+		}
+		return ctx
+	}
+
 	switch value.Kind() {
 	case slog.KindAny:
 		ctx = ctx.Any(key, value.Any())
@@ -93,6 +117,15 @@ func addToEvent(ctx *zerolog.Event, key string, value slog.Value) *zerolog.Event
 }
 
 func addToContext(ctx zerolog.Context, key string, value slog.Value) zerolog.Context {
+	if key == "" {
+		if value.Kind() == slog.KindGroup {
+			for _, attr := range value.Group() {
+				ctx = addToContext(ctx, attr.Key, attr.Value)
+			}
+		}
+		return ctx
+	}
+
 	switch value.Kind() {
 	case slog.KindAny:
 		ctx = ctx.Any(key, value.Any())

@@ -12,11 +12,13 @@ import (
 func main() {
 	h := zerologassloghandler.FromZerolog(zerolog.New(os.Stderr))
 
-	l := slog.New(h)
+	{
+		l := slog.New(slog.NewJSONHandler(os.Stderr, nil))
+		l.With("a", "b").WithGroup("G").With("c", "d").WithGroup("H").Info("msg", "e", "f")
+	}
 
-	l.With("hello", "world").Info("1")
-
-	l.WithGroup("j").With("hello", "world").Info("2")
-
-	l.Info("3")
+	{
+		l := slog.New(h)
+		l.With("a", "b").WithGroup("G").With("c", "d").WithGroup("H").Info("msg", "e", "f")
+	}
 }
