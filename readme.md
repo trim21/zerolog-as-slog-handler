@@ -29,4 +29,4 @@ func main() {
 ```
 
 
-This is a immature implement for using zerolog as `slog.Handler`. it pass most of slogtest expect multi-With (nested group, `l.With("a", "b").WithGroup("G").With("c", "d").WithGroup("H").Info("msg", "e", "f")`）
+This is a immature implement for using zerolog as `slog.Handler`. it pass most of slogtest except multi-With (nested group, `l.With("a", "b").WithGroup("G").With("c", "d").WithGroup("H").Info("msg", "e", "f")`）
