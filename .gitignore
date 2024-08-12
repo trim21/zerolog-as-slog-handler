@@ -1,0 +1,13 @@
+.idea/
+.bin/
+.task/
+dist/
+tmp/
+*.exe
+*.pprof
+node_modules/
+env.txt
+coverage.txt
+internal/web/docs/swagger/
+config.toml
+etc/example/data/
